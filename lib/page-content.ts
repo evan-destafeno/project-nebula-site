@@ -1,13 +1,14 @@
 import fs from "fs/promises"
 import path from "path"
+import { unstable_cache } from "next/cache"
 
 const PAGES_DIR = path.join(process.cwd(), "content/pages")
 
-// Keyed by element index (stringified integer) → new text content.
-// Index is determined by the same DOM walk used in EditModeClient and ContentPatcher.
 export type PagePatches = Record<string, string>
 
-export async function getPageContent(slug: string): Promise<PagePatches> {
+export const PAGE_CONTENT_TAG = "page-content"
+
+async function readFromDisk(slug: string): Promise<PagePatches> {
   try {
     const raw = await fs.readFile(path.join(PAGES_DIR, `${slug}.json`), "utf-8")
     return JSON.parse(raw)
@@ -15,6 +16,15 @@ export async function getPageContent(slug: string): Promise<PagePatches> {
     return {}
   }
 }
+
+// Cached version for page rendering — treated as static by Next.js PPR.
+// Bust with revalidateTag(PAGE_CONTENT_TAG) after any write.
+export const getPageContent = unstable_cache(readFromDisk, ["page-content"], {
+  tags: [PAGE_CONTENT_TAG],
+})
+
+// Direct disk read for admin writes — always fresh, bypasses cache.
+export const readPageContentDirect = readFromDisk
 
 export async function setPageContent(slug: string, patches: PagePatches): Promise<void> {
   await fs.mkdir(PAGES_DIR, { recursive: true })

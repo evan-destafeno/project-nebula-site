@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Wordmark } from "@/components/wordmark";
 import { WavyText } from "@/components/wavy-text";
 import { SubAlphaPlate } from "@/components/sub-epsilon-plate";
+import { PatchesProvider } from "@/components/patches-provider";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Sub-Epsilon",
@@ -55,8 +57,10 @@ const ls = (delay: number, dur: number, y?: number): CSSProperties =>
     ...(y !== undefined && { "--load-y": `${y}px` }),
   } as CSSProperties);
 
-export default function EpsilonPage() {
+export default async function EpsilonPage() {
+  const patches = await getPageContent("epsilon");
   return (
+    <PatchesProvider patches={patches}>
     <>
       <a href="#main" className="skip-link">
         Skip to content
@@ -111,21 +115,21 @@ export default function EpsilonPage() {
                   className="eyebrow mb-8 text-accent-bright load-up"
                   style={ls(100, 400)}
                 >
-                  <WavyText>Vehicle Specification · RoboSub 2026</WavyText>
+                  <WavyText patchKey="epsilon.hero.eyebrow">Vehicle Specification · RoboSub 2026</WavyText>
                 </p>
                 <h1
                   className="display mb-6 load-up"
                   style={ls(160, 700)}
                 >
-                  <WavyText>Built without</WavyText>
+                  <WavyText patchKey="epsilon.hero.headline.1">Built without</WavyText>
                   <br />
-                  <WavyText>a lab.</WavyText>
+                  <WavyText patchKey="epsilon.hero.headline.2">a lab.</WavyText>
                 </h1>
                 <p
                   className="kicker max-w-[46ch] load-up"
                   style={ls(280, 600)}
                 >
-                  <WavyText>
+                  <WavyText patchKey="epsilon.hero.description">
                     Sub-Epsilon is a fully autonomous underwater vehicle,
                     garage-built by a team of high schoolers competing in an
                     international university bracket with no institutional
@@ -755,5 +759,6 @@ export default function EpsilonPage() {
         </footer>
       </div>
     </>
+    </PatchesProvider>
   );
 }

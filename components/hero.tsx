@@ -72,27 +72,27 @@ export function Hero() {
             {/* Type column */}
             <div className="flex min-w-0 flex-col gap-6">
               <h1 className="display load-up" style={ls(160, 600)}>
-                <WavyText>
+                <WavyText patchKey="hero.headline.main">
                   {"We’re high schoolers building autonomous submarines, "}
                 </WavyText>
                 <span className="font-italic font-normal text-accent-bright">
-                  <WavyText>in a garage.</WavyText>
+                  <WavyText patchKey="hero.headline.accent">in a garage.</WavyText>
                 </span>
               </h1>
 
               <p className="kicker text-ink load-up" style={ls(280, 500, 8)}>
                 <span className="block">
-                  <WavyText>Non-profit, student-run, no school behind us.</WavyText>
+                  <WavyText patchKey="hero.kicker.1">Non-profit, student-run, no school behind us.</WavyText>
                 </span>
                 <span className="block">
-                  <WavyText>And the only team in our bracket without one.</WavyText>
+                  <WavyText patchKey="hero.kicker.2">And the only team in our bracket without one.</WavyText>
                 </span>
               </p>
 
               <p className="lede load-up" style={ls(400, 500, 8)}>
-                <span className="block"><WavyText>Project Nebula is a 100% student-built submarine, designed</WavyText></span>
-                <span className="block"><WavyText>and machined in a home garage, competing in Robosub 2026</WavyText></span>
-                <span className="block"><WavyText>against universities with full labs and faculty advisors.</WavyText></span>
+                <span className="block"><WavyText patchKey="hero.lede.1">Project Nebula is a 100% student-built submarine, designed</WavyText></span>
+                <span className="block"><WavyText patchKey="hero.lede.2">and machined in a home garage, competing in Robosub 2026</WavyText></span>
+                <span className="block"><WavyText patchKey="hero.lede.3">against universities with full labs and faculty advisors.</WavyText></span>
               </p>
 
               <div className="mt-3 flex flex-wrap items-center gap-x-7 gap-y-3 load-up" style={ls(500, 400, 8)}>
@@ -100,7 +100,7 @@ export function Hero() {
                   href="/epsilon"
                   className="group/cta inline-flex items-center gap-2.5 rounded-md bg-accent-base px-5 py-3.5 text-[0.875rem] font-medium text-ink-strong transition-colors duration-200 hover:bg-accent-bright active:translate-y-px"
                 >
-                  <WavyText>Meet Sub-Epsilon</WavyText>
+                  <WavyText patchKey="hero.cta.primary">Meet Sub-Epsilon</WavyText>
                   <ArrowRight
                     className="h-3.5 w-3.5 transition-transform duration-300 [transition-timing-function:var(--ease-quart)] group-hover/cta:translate-x-0.5"
                     aria-hidden="true"

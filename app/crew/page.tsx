@@ -5,6 +5,8 @@ import { Wordmark } from "@/components/wordmark";
 import { WavyText } from "@/components/wavy-text";
 import Image from "next/image";
 import { PortraitPlate } from "@/components/portrait-plate";
+import { PatchesProvider } from "@/components/patches-provider";
+import { getPageContent } from "@/lib/page-content";
 
 export const metadata: Metadata = {
   title: "Crew",
@@ -119,8 +121,10 @@ const ls = (delay: number, dur: number, y?: number): CSSProperties =>
 
 const pad = (n: number) => String(n).padStart(2, "0");
 
-export default function CrewPage() {
+export default async function CrewPage() {
+  const patches = await getPageContent("crew");
   return (
+    <PatchesProvider patches={patches}>
     <>
       <a href="#main" className="skip-link">
         Skip to content
@@ -174,13 +178,13 @@ export default function CrewPage() {
                   className="eyebrow load-up"
                   style={ls(120, 350, 6)}
                 >
-                  <WavyText>The Crew · 08 Members</WavyText>
+                  <WavyText patchKey="crew.intro.eyebrow">The Crew · 08 Members</WavyText>
                 </p>
                 <h1
                   className="display load-up"
                   style={ls(180, 600)}
                 >
-                  <WavyText>{"We don't have departments."}</WavyText>
+                  <WavyText patchKey="crew.intro.headline">{"We don't have departments."}</WavyText>
                 </h1>
                 <p
                   className="kicker load-up"
@@ -274,12 +278,12 @@ export default function CrewPage() {
                     />
                     <div className="flex flex-col justify-start gap-2 load-up" style={ls(rowDelay + 40, 500, 8)}>
                       <h2 className="text-[1.5rem] font-bold leading-tight tracking-[-0.025em] text-ink-strong">
-                        <WavyText>{member.name}</WavyText>
+                        <WavyText patchKey={`crew.members.${i}.name`}>{member.name}</WavyText>
                       </h2>
-                      <p className="eyebrow text-ink-muted"><WavyText>{member.role}</WavyText></p>
+                      <p className="eyebrow text-ink-muted"><WavyText patchKey={`crew.members.${i}.role`}>{member.role}</WavyText></p>
                       {member.bio && (
                         <p className="mt-3 max-w-[55ch] text-[0.9375rem] leading-relaxed text-ink-muted">
-                          <WavyText>{member.bio}</WavyText>
+                          <WavyText patchKey={`crew.members.${i}.bio`}>{member.bio}</WavyText>
                         </p>
                       )}
                     </div>
@@ -287,7 +291,7 @@ export default function CrewPage() {
                       <div className="flex flex-col gap-2 border-t border-[var(--rule)] pt-5 sm:border-t-0 sm:border-l sm:border-[var(--rule)] sm:pt-0 sm:pl-8 load-up" style={ls(rowDelay + 80, 500, 8)}>
                         <p className="eyebrow text-ink-faint">Beyond the sub</p>
                         <p className="text-[0.9375rem] leading-relaxed text-ink-muted">
-                          <WavyText>{member.outside}</WavyText>
+                          <WavyText patchKey={`crew.members.${i}.outside`}>{member.outside}</WavyText>
                         </p>
                       </div>
                     )}
@@ -328,10 +332,10 @@ export default function CrewPage() {
                       )}
                     </div>
                     <p className="text-[0.9375rem] font-semibold tracking-[-0.01em] text-ink-strong mb-2">
-                      <WavyText>{sponsor.name}</WavyText>
+                      <WavyText patchKey={`crew.sponsors.${i}.name`}>{sponsor.name}</WavyText>
                     </p>
                     <p className="text-[0.875rem] leading-relaxed text-ink-muted max-w-[45ch]">
-                      <WavyText>{sponsor.description}</WavyText>
+                      <WavyText patchKey={`crew.sponsors.${i}.description`}>{sponsor.description}</WavyText>
                     </p>
                   </div>
                 ))}
@@ -379,5 +383,6 @@ export default function CrewPage() {
         </footer>
       </div>
     </>
+    </PatchesProvider>
   );
 }

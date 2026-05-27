@@ -1,36 +1,35 @@
-import type { ReactNode } from "react";
+"use client"
 
-/**
- * WavyText — splits text into per-letter inline-block spans for the JS-driven
- * underwater wave (see OceanEffects). Each `.wavy-char` gets its phase derived
- * from its measured screen position at mount, with a small random jitter, so
- * neighbors share a current and distant letters feel different waters.
- *
- * No CSS animation, no inline animation-delay, no `--wave-i`. The rAF loop in
- * OceanEffects writes `style.transform` per letter per frame while the reveal
- * is active.
- *
- * Accessibility: screen readers see the original string via an `sr-only`
- * sibling. The visual letter spans are `aria-hidden` so SRs don't read the
- * text out one character at a time.
- */
+import type { ReactNode } from "react"
+import { usePatchesContext } from "@/lib/patches-context"
+
 type Props = {
-  children: string;
-  className?: string;
-};
+  children: string
+  className?: string
+  patchKey?: string
+}
 
-export function WavyText({ children, className }: Props): ReactNode {
-  const segments = children.split(/(\s+)/);
+export function WavyText({ children, className, patchKey }: Props): ReactNode {
+  const patches = usePatchesContext()
+  const text = patchKey !== undefined && patches[patchKey] !== undefined
+    ? patches[patchKey]
+    : children
+
+  const segments = text.split(/(\s+)/)
 
   return (
     <>
-      {/* suppressHydrationWarning: ContentPatcher mutates this text after hydration */}
-      <span className="sr-only" suppressHydrationWarning>{children}</span>
+      <span
+        className="sr-only"
+        {...(patchKey ? { "data-patch-key": patchKey } : {})}
+      >
+        {text}
+      </span>
       <span className={className} aria-hidden="true">
         {segments.flatMap((seg, segIdx) => {
-          if (seg === "") return [];
+          if (seg === "") return []
           if (/^\s+$/.test(seg)) {
-            return [<span key={`s-${segIdx}`}>{seg}</span>];
+            return [<span key={`s-${segIdx}`}>{seg}</span>]
           }
           return [
             <span key={`w-${segIdx}`} style={{ whiteSpace: "nowrap" }}>
@@ -40,9 +39,9 @@ export function WavyText({ children, className }: Props): ReactNode {
                 </span>
               ))}
             </span>,
-          ];
+          ]
         })}
       </span>
     </>
-  );
+  )
 }

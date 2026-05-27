@@ -3,58 +3,17 @@
 import { useEffect, useRef, useState, useTransition } from "react"
 import { savePageContent, exitEditMode } from "@/app/admin/actions"
 
-// ── DOM walk ──────────────────────────────────────────────────────────────────
-//
-// Collects every element that has at least one direct text-node child with
-// non-whitespace content. aria-hidden subtrees (wavy-char spans), the edit UI
-// overlay, and non-display tags (script, style, etc.) are skipped entirely.
-//
-// The resulting ordered array is the ONLY source of element indices. The same
-// algorithm runs in ContentPatcher so indices are stable across edit/view modes.
-// CRITICAL: the script tag injected by DynamicLayoutAddons (content patches)
-// lives in <body> and has JSON text content — SKIP_TAGS prevents it from
-// entering the array and shifting all subsequent indices.
-
-const SKIP_TAGS = new Set([
-  "SCRIPT", "STYLE", "NOSCRIPT", "TEMPLATE", "META", "LINK", "HEAD",
-])
-
-function getEditableElements(root: Element): HTMLElement[] {
-  const results: HTMLElement[] = []
-
-  function walk(el: Element) {
-    if (SKIP_TAGS.has(el.tagName)) return
-    if (el.hasAttribute("data-edit-ui")) return
-    if (el.getAttribute("aria-hidden") === "true") return
-
-    let hasDirectText = false
-    for (let i = 0; i < el.childNodes.length; i++) {
-      const n = el.childNodes[i]
-      if (n.nodeType === Node.TEXT_NODE && (n.textContent ?? "").trim()) {
-        hasDirectText = true
-        break
-      }
-    }
-
-    if (hasDirectText) {
-      results.push(el as HTMLElement)
-      return // treat element as a unit — don't descend further
-    }
-
-    for (let i = 0; i < el.children.length; i++) {
-      walk(el.children[i])
-    }
-  }
-
-  walk(root)
-  return results
+// Collects all elements with a data-patch-key attribute. These are the sr-only
+// spans emitted by WavyText when a patchKey prop is provided. Keyed by the
+// patch key string so changes are recorded by name, not DOM position.
+function getPatchableElements(): Map<string, HTMLElement> {
+  const map = new Map<string, HTMLElement>()
+  document.querySelectorAll<HTMLElement>("[data-patch-key]").forEach((el) => {
+    const key = el.getAttribute("data-patch-key")!
+    map.set(key, el)
+  })
+  return map
 }
-
-// ── WavyText visual rebuild ───────────────────────────────────────────────────
-//
-// After patching the sr-only span's text, rebuild the sibling aria-hidden span
-// so the wave animation picks up the new characters on its next tick.
-// Mirrors WavyText's render structure exactly.
 
 function rebuildWavyVisual(visual: Element, text: string) {
   visual.innerHTML = ""
@@ -77,20 +36,14 @@ function rebuildWavyVisual(visual: Element, text: string) {
   }
 }
 
-// ── Edit mode activation / deactivation ──────────────────────────────────────
-
 function activateEditMode(
-  elements: HTMLElement[],
-  changesRef: React.RefObject<Record<number, string>>
+  elements: Map<string, HTMLElement>,
+  changesRef: React.RefObject<Record<string, string>>
 ) {
-  elements.forEach((el, idx) => {
+  elements.forEach((el, key) => {
     const isSrOnly = el.classList.contains("sr-only")
-
-    // sr-only spans (WavyText accessibility layer) need visibility overrides
-    // so the user can see and interact with the text directly.
     if (isSrOnly) {
       el.classList.add("edit-target")
-      // Hide the sibling aria-hidden visual span while editing
       const visual = el.nextElementSibling
       if (visual?.getAttribute("aria-hidden") === "true") {
         ;(visual as HTMLElement).style.display = "none"
@@ -98,18 +51,16 @@ function activateEditMode(
     }
 
     el.setAttribute("contenteditable", "true")
-    el.setAttribute("data-edit-idx", String(idx))
+    el.setAttribute("data-edit-key", key)
     el.setAttribute("spellcheck", "false")
 
     el.addEventListener("input", () => {
-      changesRef.current![idx] = el.textContent ?? ""
+      changesRef.current![key] = el.textContent ?? ""
     })
-
     el.addEventListener("focus", () => {
       el.style.outline = "1px solid oklch(0.55 0.18 280 / 0.6)"
       el.style.outlineOffset = "2px"
     })
-
     el.addEventListener("blur", () => {
       el.style.outline = ""
       el.style.outlineOffset = ""
@@ -117,10 +68,10 @@ function activateEditMode(
   })
 }
 
-function deactivateEditMode(elements: HTMLElement[]) {
+function deactivateEditMode(elements: Map<string, HTMLElement>) {
   elements.forEach((el) => {
     el.removeAttribute("contenteditable")
-    el.removeAttribute("data-edit-idx")
+    el.removeAttribute("data-edit-key")
     el.removeAttribute("spellcheck")
     el.style.outline = ""
     el.style.outlineOffset = ""
@@ -128,10 +79,8 @@ function deactivateEditMode(elements: HTMLElement[]) {
 
     if (el.classList.contains("sr-only")) {
       el.classList.remove("edit-target")
-      // Restore the sibling visual span
       const visual = el.nextElementSibling
       if (visual?.getAttribute("aria-hidden") === "true") {
-        // Rebuild so wavy-chars reflect any changes made
         rebuildWavyVisual(visual, el.textContent ?? "")
         ;(visual as HTMLElement).style.display = ""
       }
@@ -182,29 +131,23 @@ const btnGhost = (disabled: boolean): React.CSSProperties => ({
   opacity: disabled ? 0.4 : 1,
 })
 
-// ── Bar states ────────────────────────────────────────────────────────────────
-
 type BarState = "idle" | "confirm" | "saving" | "saved" | "error"
-
-// ── Component ─────────────────────────────────────────────────────────────────
 
 export function EditModeClient({ targetPath }: { targetPath: string }) {
   const [barState, setBarState] = useState<BarState>("idle")
   const [barError, setBarError] = useState<string | null>(null)
   const [password, setPassword] = useState("")
   const [isPending, startTransition] = useTransition()
-  const changesRef = useRef<Record<number, string>>({})
-  const elementsRef = useRef<HTMLElement[]>([])
+  const changesRef = useRef<Record<string, string>>({})
+  const elementsRef = useRef<Map<string, HTMLElement>>(new Map())
   const passwordInputRef = useRef<HTMLInputElement>(null)
 
-  // All bar buttons are disabled whenever any async operation is in flight
   const disabled = isPending || barState === "saving"
 
   useEffect(() => {
     const body = document.body
     body.setAttribute("data-edit-mode", "true")
 
-    // Inject styles for gear cursor, edit highlights, and sr-only visibility
     const styleEl = document.createElement("style")
     styleEl.setAttribute("data-edit-ui", "true")
     styleEl.textContent = `
@@ -227,14 +170,10 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
     `
     document.head.appendChild(styleEl)
 
-    // Suppress clicks on links and buttons so navigation/actions don't fire
-    // while the user is clicking to edit text. Capture phase so we intercept
-    // before any element's own handler. Clicks within the edit UI bar are
-    // always allowed through.
     const suppressClicks = (e: MouseEvent) => {
       const target = e.target as Element | null
       if (!target) return
-      if (target.closest("[data-edit-ui]")) return // edit bar always works
+      if (target.closest("[data-edit-ui]")) return
       const interactive = target.closest("a, button, [role='button'], label, summary")
       if (!interactive) return
       e.preventDefault()
@@ -242,9 +181,8 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
     }
     document.addEventListener("click", suppressClicks, true)
 
-    // Defer DOM walk slightly so the page is fully painted
     const timer = setTimeout(() => {
-      const els = getEditableElements(body)
+      const els = getPatchableElements()
       elementsRef.current = els
       activateEditMode(els, changesRef)
     }, 100)
@@ -267,7 +205,6 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
     }
   }, [])
 
-  // Focus password input when confirm state opens
   useEffect(() => {
     if (barState === "confirm") {
       setTimeout(() => passwordInputRef.current?.focus(), 50)
@@ -317,7 +254,6 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
   const pageLabel = targetPath === "/" ? "Home" : targetPath.replace(/^\//, "")
 
   return (
-    // Floating bar — bottom center, styled like the site's hint overlays
     <div
       data-edit-ui="true"
       style={{

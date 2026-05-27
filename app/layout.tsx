@@ -3,16 +3,14 @@ import { Suspense } from "react";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
 import { Fraunces } from "next/font/google";
-import { cookies, headers } from "next/headers";
+import { cookies } from "next/headers";
 import { ClickHint } from "@/components/click-hint";
 import { OceanEffects } from "@/components/ocean-effects";
 import { ScrollHint } from "@/components/scroll-hint";
 import { UnderwaterBackground } from "@/components/underwater-background";
 import { KonamiGate } from "@/components/admin/konami-gate";
 import { EditModeClient } from "@/components/edit-mode-client";
-import { ContentPatcher } from "@/components/content-patcher";
 import { verifyEditModeToken, EDIT_MODE_COOKIE, EDIT_PATH_COOKIE } from "@/lib/admin-auth";
-import { getPageContent, pathnameToSlug } from "@/lib/page-content";
 import "./globals.css";
 
 const fraunces = Fraunces({
@@ -56,38 +54,14 @@ export const metadata: Metadata = {
 // Suspense-wrapped so /_not-found (and other statically prerendered pages) are not blocked.
 async function DynamicLayoutAddons() {
   const cookieStore = await cookies();
-  const headersList = await headers();
 
-  // ── Edit mode detection ────────────────────────────────────────────────────
   const editToken = cookieStore.get(EDIT_MODE_COOKIE)?.value;
   const editPath = cookieStore.get(EDIT_PATH_COOKIE)?.value;
   const inEditMode =
     !!(editToken && editPath && (await verifyEditModeToken(editToken)));
 
-  // ── Page content patches ───────────────────────────────────────────────────
-  // Pathname forwarded by proxy.ts via x-pathname header
-  const pathname = headersList.get("x-pathname") ?? "/";
-  const patches = await getPageContent(pathnameToSlug(pathname));
-  const hasPatches = Object.keys(patches).length > 0;
-
-  return (
-    <>
-      {/* Inline patches for ContentPatcher — avoids a client-side fetch */}
-      {hasPatches && (
-        <script
-          id="__page_patches__"
-          type="application/json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(patches) }}
-        />
-      )}
-
-      {/* Apply saved content patches on every page load */}
-      {hasPatches && <ContentPatcher />}
-
-      {/* Gear cursor + in-place editing overlay (only when admin is in edit mode) */}
-      {inEditMode && editPath && <EditModeClient targetPath={editPath} />}
-    </>
-  );
+  if (!inEditMode || !editPath) return null;
+  return <EditModeClient targetPath={editPath} />;
 }
 
 export default function RootLayout({

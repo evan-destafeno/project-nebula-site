@@ -2,7 +2,7 @@
 
 import { cookies } from "next/headers"
 import { redirect } from "next/navigation"
-import { revalidatePath } from "next/cache"
+import { revalidatePath, revalidateTag } from "next/cache"
 import fs from "fs/promises"
 import path from "path"
 import {
@@ -15,7 +15,7 @@ import {
   EDIT_PATH_COOKIE,
 } from "@/lib/admin-auth"
 import { getEntriesForDate, getAllEntries } from "@/lib/log"
-import { getPageContent, setPageContent, pathnameToSlug, type PagePatches } from "@/lib/page-content"
+import { readPageContentDirect, setPageContent, pathnameToSlug, PAGE_CONTENT_TAG, type PagePatches } from "@/lib/page-content"
 
 // ── Auth ─────────────────────────────────────────────────────────────────────
 
@@ -398,7 +398,9 @@ export async function savePageContent(
   }
   try {
     const slug = pathnameToSlug(pathname)
-    await setPageContent(slug, patches)
+    const existing = await readPageContentDirect(slug)
+    await setPageContent(slug, { ...existing, ...patches })
+    revalidateTag(PAGE_CONTENT_TAG, "max")
     revalidatePath(pathname)
     return { error: null, success: true }
   } catch (err) {
@@ -412,7 +414,7 @@ export async function savePageContent(
 // Called server-side from the root layout to embed patches inline in HTML.
 // No auth required — patches are public-facing content overrides.
 export async function readPageContent(pathname: string): Promise<PagePatches> {
-  return getPageContent(pathnameToSlug(pathname))
+  return readPageContentDirect(pathnameToSlug(pathname))
 }
 
 // ── Post delete ───────────────────────────────────────────────────────────────

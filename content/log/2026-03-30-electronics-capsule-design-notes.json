@@ -1,0 +1,10 @@
+{
+  "date": "2026-03-30",
+  "type": "dispatch",
+  "heading": "Electronics Capsule Design Notes",
+  "body": "The capsule is a 4-inch acrylic tube with Blue Robotics flanged endcaps. All electronics are mounted on a custom aluminum extrusion rail that slides out as a single assembly for maintenance. No fishing individual boards out of a tube.\n\nThe rail carries: two Raspberry Pi 5 boards (vision and navigation), one Pixhawk 6C flight controller acting as the ESC controller and IMU aggregator, one custom power distribution board, and one camera interface board. Total draw at full load is 34W. Battery is a 15.6V 10Ah LiFePO4 pack in a separate pressure housing.\n\nThe custom power board took three revisions. Rev 1 had a ground loop that was coupling switching noise from the ESC power rails into the Pi 5 USB-C rails. The Pi 5s were rebooting randomly under thruster load. Rev 2 added a ferrite bead and a 10uF bulk cap at the Pi 5 supply input. Better, but the noise floor on the IMU was still elevated. Rev 3 separated the ESC ground plane from the logic ground plane on the PCB and joined them at a single star point near the battery terminals. The IMU noise floor dropped by 14dB. The Pi 5s have not rebooted under load since.\n\nThe camera interface board breaks out four MIPI CSI-2 lanes for the two cameras we plan to run at competition: one forward-facing stereo pair for gate detection, one downward-facing for path and buoy tasks. We are only using one stereo pair right now. The second camera position is reserved pending a decision on whether we have time to train a reliable downward model before the competition deadline.\n\nTotal capsule assembly time from parts to first power-on: 22 hours across six build sessions.",
+  "image": {
+    "src": "/log/2026-03-30-electronics-capsule-v.jpg",
+    "orientation": "vertical"
+  }
+}

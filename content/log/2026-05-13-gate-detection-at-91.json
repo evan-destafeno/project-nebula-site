@@ -1,0 +1,7 @@
+{
+  "date": "2026-05-13",
+  "type": "update",
+  "category": "SOFTWARE",
+  "heading": "Gate Detection at 91%",
+  "body": "YOLOv11 gate detection model hit 91% confidence consistency in static pool conditions. That is above our 88% threshold for the competition run.\n\nThe improvement came from retraining on 340 additional frames captured during session 5, where lighting conditions were more variable. The previous model was overtrained on controlled indoor conditions and degraded in outdoor light.\n\nNext: test against the orange buoy task. The buoy model is currently at 79% and needs another training pass before we can rely on it."
+}

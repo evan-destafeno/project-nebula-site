@@ -1,0 +1,10 @@
+{
+  "date": "2026-05-19",
+  "type": "milestone",
+  "heading": "Thruster Array Commissioned",
+  "body": "All eight T200 thrusters calibrated and within 1.8% of target thrust across the array. This closes the propulsion milestone for RoboSub 2026.\n\nCalibration took eleven days across five pool sessions. The main hold-up was the port-aft thruster, which was showing intermittent dropout at throttle above 60%. Connector issue, not the thruster itself. Replaced the JST connector and it has been clean since session 6.\n\nFrom here we move to integrated navigation testing. The state machine can now command thrust with known response curves. Depth hold and heading hold will be tuned against real thrust data rather than theoretical values.",
+  "image": {
+    "src": "/log/2026-05-19-thruster-array-h.jpg",
+    "orientation": "horizontal"
+  }
+}

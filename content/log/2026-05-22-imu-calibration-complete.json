@@ -1,0 +1,7 @@
+{
+  "date": "2026-05-22",
+  "type": "update",
+  "category": "HARDWARE",
+  "heading": "IMU Calibration Complete",
+  "body": "48 calibration passes over three days. Drift is now within 2.1% across all axes under simulated load.\n\nWe were seeing a consistent 4-6% yaw drift during hard thruster transitions. Traced it to magnetic interference from the ESC wiring bundle running too close to the IMU board. Rerouted the bundle 40mm to port and the drift dropped immediately.\n\nReady for water trials."
+}

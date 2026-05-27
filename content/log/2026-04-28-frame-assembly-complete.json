@@ -1,0 +1,6 @@
+{
+  "date": "2026-04-28",
+  "type": "milestone",
+  "heading": "Frame Assembly Complete",
+  "body": "Sub-Epsilon is physically built. All PVC tube sections bonded, thruster mounts installed, endcap assemblies fitted.\n\nThe frame came in at 4.2 kg dry, 1.1 kg under our weight ceiling. That margin goes straight into ballast flexibility for final depth tuning at the venue.\n\nThe 3D-printed thruster junction pieces took three iterations. The first print cracked at the mounting boss during torque testing. Increased wall thickness from 3mm to 5mm and switched infill from 15% gyroid to 40% honeycomb. The third print has held through two days of handling and dry-spin testing without complaint.\n\nNext step: seal the electronics capsule and begin wet testing."
+}

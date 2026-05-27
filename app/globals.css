@@ -1,0 +1,564 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Project Nebula · Editorial Reset
+   Source of truth: brand-spec.md (root). Dark mode is the only mode.
+   Warm coffee-charcoal + bone parchment + a single team purple ink.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@theme inline {
+  /* shadcn semantic tokens — mapped to Nebula values */
+  --color-background: var(--paper-deep);
+  --color-foreground: var(--ink);
+  --color-card: var(--paper-base);
+  --color-card-foreground: var(--ink);
+  --color-popover: var(--paper-base);
+  --color-popover-foreground: var(--ink);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--ink-strong);
+  --color-secondary: var(--paper-base);
+  --color-secondary-foreground: var(--ink);
+  --color-muted: var(--paper-base);
+  --color-muted-foreground: var(--ink-muted);
+  --color-accent: var(--paper-base);
+  --color-accent-foreground: var(--ink);
+  --color-destructive: oklch(0.65 0.20 28);
+  --color-border: var(--rule);
+  --color-input: var(--rule);
+  --color-ring: var(--accent);
+
+  /* Editorial palette — used directly by hero + components */
+  --color-paper-deep: var(--paper-deep);
+  --color-paper-base: var(--paper-base);
+  --color-paper-sunken: var(--paper-sunken);
+  --color-ink-strong: var(--ink-strong);
+  --color-ink: var(--ink);
+  --color-ink-muted: var(--ink-muted);
+  --color-ink-faint: var(--ink-faint);
+  --color-rule: var(--rule);
+  --color-rule-soft: var(--rule-soft);
+  --color-accent-base: var(--accent);
+  --color-accent-bright: var(--accent-bright);
+  --color-accent-deep: var(--accent-deep);
+  --color-accent-wash: var(--accent-wash);
+  --color-mission: var(--mission);
+
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-italic: var(--font-fraunces);
+
+  --radius-sm: 3px;
+  --radius-md: 4px;
+  --radius-lg: 6px;
+  --radius-xl: 8px;
+  --radius-2xl: 12px;
+
+  --ease-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+:root {
+  color-scheme: dark;
+
+  /* Surfaces — warm coffee-charcoal, OKLCH for honest hue control */
+  --paper-deep: oklch(0.16 0.012 50);     /* page background */
+  --paper-base: oklch(0.20 0.013 50);     /* lifted plate, popovers */
+  --paper-sunken: oklch(0.13 0.011 50);   /* below page (rare) */
+
+  /* Ink — bone parchment, tinted slightly warm to match paper */
+  --ink-strong: oklch(0.95 0.014 80);     /* display headlines */
+  --ink: oklch(0.88 0.014 80);            /* body */
+  --ink-muted: oklch(0.74 0.013 70);      /* secondary, lede helper */
+  --ink-faint: oklch(0.52 0.012 60);      /* chrome, dimensions, captions */
+
+  /* Hairline rules */
+  --rule: oklch(0.30 0.012 50);
+  --rule-soft: oklch(0.22 0.011 50);
+
+  /* Team purple — single saturated accent, deep ultraviolet ink */
+  --accent: oklch(0.55 0.23 305);
+  --accent-bright: oklch(0.68 0.20 305);
+  --accent-deep: oklch(0.42 0.22 305);
+  --accent-wash: oklch(0.55 0.23 305 / 0.10);
+
+  /* Status — quiet desaturated mission green */
+  --mission: oklch(0.74 0.13 145);
+}
+
+@layer base {
+  * {
+    border-color: var(--rule);
+  }
+
+  html {
+    @apply font-sans;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    font-feature-settings: "ss01", "cv11";
+    overflow-x: hidden;
+  }
+
+  body {
+    background: var(--paper-deep);
+    color: var(--ink);
+    min-height: 100dvh;
+    font-size: 1rem;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Type defaults */
+  h1, h2, h3 {
+    color: var(--ink-strong);
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Italic accent — Fraunces with display optical size and softness */
+  .font-italic {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 144, "SOFT" 50;
+  }
+  .font-italic-text {
+    font-family: var(--font-fraunces), Georgia, serif;
+    font-style: italic;
+    font-variation-settings: "opsz" 14, "SOFT" 50;
+  }
+
+  /* Skip link */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 1000;
+    padding: 8px 12px;
+    background: var(--accent);
+    color: var(--ink-strong);
+    border-radius: 4px;
+    font-size: 0.875rem;
+  }
+  .skip-link:focus-visible {
+    left: 1rem;
+    top: 1rem;
+  }
+
+  /* Focus ring — visible on all interactive elements */
+  :where(a, button, [role="button"], input, select, textarea):focus-visible {
+    outline: 2px solid var(--accent-bright);
+    outline-offset: 2px;
+    border-radius: 3px;
+  }
+
+  /* Tabular numerals everywhere monospaced data lives */
+  .font-mono,
+  [data-tabular] {
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Typography utilities — editorial scale
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility display {
+  font-family: var(--font-geist-sans);
+  font-weight: 700;
+  font-size: clamp(2.25rem, 4.4vw, 3.875rem);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--ink-strong);
+  text-wrap: balance;
+  contain: layout style;
+}
+
+@utility kicker {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-style: italic;
+  font-variation-settings: "opsz" 60, "SOFT" 50;
+  font-size: clamp(1.125rem, 1.6vw, 1.375rem);
+  line-height: 1.5;
+  color: var(--ink);
+  text-wrap: pretty;
+  contain: layout style;
+}
+
+@utility lede {
+  font-size: 1.0625rem;
+  line-height: 1.65;
+  color: var(--ink-muted);
+  max-width: 65ch;
+  text-wrap: pretty;
+  contain: layout style;
+}
+
+@utility eyebrow {
+  font-family: var(--font-geist-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-faint);
+  font-variant-numeric: tabular-nums;
+  contain: layout style;
+}
+
+@utility colophon {
+  font-family: var(--font-geist-mono);
+  font-size: 0.6875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.16em;
+  color: var(--ink-muted);
+  font-variant-numeric: tabular-nums;
+  contain: layout style;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Hairline rules — used as section dividers
+   ───────────────────────────────────────────────────────────────────────── */
+
+@utility hairline {
+  background: var(--rule);
+  height: 1px;
+  width: 100%;
+}
+
+@utility hairline-soft {
+  background: var(--rule-soft);
+  height: 1px;
+  width: 100%;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Ocean Effects — bone-parchment cursor takes over for capable pointers
+   ───────────────────────────────────────────────────────────────────────── */
+
+html.ocean-enabled body {
+  cursor: none;
+}
+html.ocean-enabled body *,
+html.ocean-enabled body *::before,
+html.ocean-enabled body *::after {
+  cursor: inherit;
+}
+html.ocean-enabled input,
+html.ocean-enabled textarea,
+html.ocean-enabled [contenteditable="true"] {
+  cursor: text;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Underwater Background — always-rendered scene behind the page surface.
+   Clip-path is driven from JS via inline style on the element itself, NOT
+   via a root-level CSS variable. Custom-property writes on documentElement
+   cascade-invalidate every descendant in Firefox, which at 60Hz with ~700
+   .wavy-char descendants stalls the main thread badly. Inline style on
+   one element keeps the per-frame work O(1).
+
+   The .ocean-surface wrapper sits above; per-letter waves (.wavy-char) run
+   only while .ocean-submerged is set on <html>.
+
+   Color tokens here are TRANSIENT and live nowhere else: they are not
+   registered in brand-spec.md. The underwater scene is a sub-second reveal,
+   not part of the static page palette.
+   ───────────────────────────────────────────────────────────────────────── */
+
+:root {
+  --uw-1: oklch(0.32 0.06 235);
+  --uw-2: oklch(0.22 0.07 240);
+  --uw-3: oklch(0.15 0.06 245);
+  --uw-4: oklch(0.10 0.05 250);
+  --uw-silhouette: oklch(0.06 0.03 245);
+  --uw-silhouette-near: oklch(0.08 0.04 245);
+  --uw-silhouette-mid: oklch(0.13 0.05 240);
+  --uw-silhouette-far: oklch(0.20 0.06 240);
+  --uw-bubble: oklch(0.55 0.04 235);
+}
+
+.underwater-background {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  clip-path: circle(0px at 50% 50%);
+  contain: strict;
+  transform: translateZ(0);
+  will-change: clip-path;
+}
+.underwater-background .underwater-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+/* Page-surface wrapper: sits above the underwater layer, holds page content. */
+.ocean-surface {
+  position: relative;
+  z-index: 10;
+}
+
+/* Per-letter wave: each character is wrapped in <span class="wavy-char">.
+   Motion is driven entirely by the rAF loop in OceanEffects, which writes
+   inline `transform` per letter per frame using a hybrid scheme: phase
+   from screen position (so neighbors share a current) plus a small random
+   jitter (so no two letters trace the same path).
+
+   No CSS animation, no transition, no will-change here. The browser
+   doesn't auto-promote inline-style transform writes to per-element layers
+   the way it does CSS animations, so all ~700 letters render into their
+   parent text element's compositor layer rather than 700 layers. The
+   `contain: layout style paint` on each typography utility (.display,
+   .kicker, .lede, .colophon) reinforces that isolation as cheap insurance. */
+.wavy-char {
+  display: inline-block;
+}
+
+/* Underwater scene animations — paused unless the page is submerged.
+   Keyframe values are absolute SVG user units (the viewBox is 1600×1000),
+   not viewport units, so transforms compose predictably across viewports. */
+
+@keyframes uw-bubble-rise {
+  0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+  8%   { opacity: 0.6; }
+  92%  { opacity: 0.6; }
+  100% { transform: translate3d(8px, -1080px, 0); opacity: 0; }
+}
+
+@keyframes uw-kelp-sway {
+  0%, 100% { transform: rotate(-1.6deg); }
+  50%      { transform: rotate(1.8deg); }
+}
+
+@keyframes uw-school-drift {
+  0%   { transform: translate3d(-300px, 0, 0); }
+  100% { transform: translate3d(1900px, 0, 0); }
+}
+
+@keyframes uw-sub-cruise {
+  0%   { transform: translate3d(-300px, 320px, 0); }
+  100% { transform: translate3d(1900px, 360px, 0); }
+}
+
+.underwater-svg .uw-bubbles circle,
+.underwater-svg .uw-kelp-near .uw-kelp-blade,
+.underwater-svg .uw-school-drift,
+.underwater-svg .uw-sub-epsilon-drift {
+  transform-box: view-box;
+  animation-play-state: paused;
+}
+
+.underwater-svg .uw-bubbles circle {
+  /* per-bubble animation comes from inline style; just keep paused default */
+}
+
+.underwater-svg .uw-kelp-near .uw-kelp-blade {
+  animation: uw-kelp-sway 5.4s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
+
+.underwater-svg .uw-school-drift {
+  animation: uw-school-drift 38s linear infinite;
+}
+
+.underwater-svg .uw-sub-epsilon-drift {
+  animation: uw-sub-cruise 46s linear infinite;
+}
+
+html.ocean-submerged .underwater-svg .uw-bubbles circle,
+html.ocean-submerged .underwater-svg .uw-kelp-near .uw-kelp-blade,
+html.ocean-submerged .underwater-svg .uw-school-drift,
+html.ocean-submerged .underwater-svg .uw-sub-epsilon-drift {
+  animation-play-state: running;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Page load choreography — fires once, then stops.
+   opacity + translateY only; ease-out-expo throughout.
+   prefers-reduced-motion: covered by the global override below.
+   ───────────────────────────────────────────────────────────────────────── */
+
+@keyframes load-fade-up {
+  from { opacity: 0; transform: translateY(var(--load-y, 10px)); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes load-scale-x {
+  from { transform: scaleX(0); }
+  to   { transform: scaleX(1); }
+}
+
+@keyframes load-scale-y {
+  from { transform: scaleY(0); }
+  to   { transform: scaleY(1); }
+}
+
+@keyframes load-dot-arrive {
+  from { transform: scale(1.4); }
+  to   { transform: scale(1); }
+}
+
+.load-up {
+  animation-name: load-fade-up;
+  animation-duration: var(--load-dur, 500ms);
+  animation-delay: var(--load-delay, 0ms);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+
+.load-rule {
+  transform-origin: left;
+  animation-name: load-scale-x;
+  animation-duration: var(--load-dur, 400ms);
+  animation-delay: var(--load-delay, 0ms);
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+
+.load-rule-y {
+  transform-origin: top;
+  animation-name: load-scale-y;
+  animation-duration: var(--load-dur, 400ms);
+  animation-delay: var(--load-delay, 0ms);
+  animation-timing-function: cubic-bezier(0.25, 1, 0.5, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+
+.load-dot {
+  animation-name: load-dot-arrive;
+  animation-duration: var(--load-dur, 400ms);
+  animation-delay: var(--load-delay, 0ms);
+  animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  animation-fill-mode: both;
+  animation-play-state: paused;
+}
+
+html.intro-complete .load-up,
+html.intro-complete .load-rule,
+html.intro-complete .load-rule-y,
+html.intro-complete .load-dot {
+  animation-play-state: running;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Scroll hint
+   ───────────────────────────────────────────────────────────────────────── */
+
+.scroll-hint-wrap {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  pointer-events: none;
+}
+
+.scroll-hint {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: var(--ink-strong);
+  color: var(--paper-deep);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.scroll-hint__arrow {
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+/* ── Enter ── */
+
+@keyframes blob-enter {
+  0%   { transform: scale(0); }
+  65%  { transform: scale(1.09); }
+  100% { transform: scale(1); }
+}
+
+@keyframes arrow-enter {
+  from { opacity: 0; transform: translateY(-4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes arrow-idle {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(4px); }
+}
+
+.scroll-hint--visible {
+  animation: blob-enter 600ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.scroll-hint--visible .scroll-hint__arrow {
+  animation:
+    arrow-enter 250ms ease forwards 480ms,
+    arrow-idle  1.6s  ease-in-out  730ms infinite;
+}
+
+/* ── Click hint idle (overrides arrow-idle for cursor icon) ── */
+
+@keyframes cursor-idle {
+  0%, 100% { transform: scale(1); }
+  30%      { transform: scale(0.75); }
+  52%      { transform: scale(1.08); }
+}
+
+.scroll-hint--visible .click-hint__icon {
+  animation:
+    arrow-enter 250ms ease forwards 480ms,
+    cursor-idle 1.8s ease-in-out 730ms infinite;
+}
+
+/* ── Exit ── */
+
+@keyframes blob-exit {
+  0%   { transform: scale(1);                          opacity: 1; }
+  18%  { transform: scaleX(1.22) scaleY(0.44);        opacity: 1; }
+  48%  { transform: scaleX(1.05) scaleY(0.18);        opacity: 1; }
+  78%  { transform: scaleX(0.55) scaleY(0.07);        opacity: 0.5; }
+  100% { transform: scale(0);                          opacity: 0; }
+}
+
+.scroll-hint--exiting {
+  transform-origin: center 65%;
+  animation: blob-exit 560ms cubic-bezier(0.55, 0, 0.8, 0.2) forwards;
+}
+
+.scroll-hint--exiting .scroll-hint__arrow {
+  opacity: 0;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────
+   Reduced motion
+   ───────────────────────────────────────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .scroll-hint--visible,
+  .scroll-hint--exiting,
+  .scroll-hint--visible .scroll-hint__arrow,
+  .scroll-hint--visible .click-hint__icon {
+    animation: none;
+  }
+
+  .scroll-hint--visible .scroll-hint__arrow,
+  .scroll-hint--visible .click-hint__icon {
+    opacity: 1;
+  }
+}

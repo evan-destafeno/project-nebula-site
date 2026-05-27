@@ -1,0 +1,7 @@
+{
+  "date": "2026-04-20",
+  "type": "update",
+  "category": "SOFTWARE",
+  "heading": "Migrated to ROS 2 Jazzy",
+  "body": "Completed the migration from ROS 2 Humble to Jazzy on both Pi 5 boards. Build time dropped from 14 minutes to 9 minutes. No breaking changes to our node interfaces.\n\nOne dependency issue: the BlueRobotics Bar30 pressure sensor driver had an undocumented breaking change in its Jazzy package. The topic type changed from Float64 to FluidPressure. Updated our depth node to consume the correct message type. Two hours of debugging that could have been one sentence in the changelog."
+}

@@ -169,8 +169,10 @@ export function OceanEffects() {
             span.style.transition =
               `transform ${LETTER_RISE_MS}ms cubic-bezier(0.16,1,0.3,1),` +
               `opacity ${LETTER_RISE_MS}ms cubic-bezier(0.16,1,0.3,1)`;
-            span.style.opacity = "1";
-            span.style.transform = "translateY(0)";
+            requestAnimationFrame(() => {
+              span.style.opacity = "1";
+              span.style.transform = "translateY(0)";
+            });
           }, delay),
         );
       });

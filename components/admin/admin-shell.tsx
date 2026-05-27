@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react"
 import { logoutTo } from "@/app/admin/actions"
 import { PostForm } from "@/components/admin/post-form"
-import { EditSection } from "@/components/admin/edit-section"
+import { EditSection } from "@/components/admin/edit-form"
 import { EditSiteSection } from "@/components/admin/edit-site-section"
 import { PicturesSection } from "@/components/admin/pictures-section"
 

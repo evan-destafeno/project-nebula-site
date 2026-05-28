@@ -417,6 +417,73 @@ export async function readPageContent(pathname: string): Promise<PagePatches> {
   return readPageContentDirect(pathnameToSlug(pathname))
 }
 
+// ── Page image upload ─────────────────────────────────────────────────────────
+
+export type UploadImageResult = { error: string | null; success: boolean; src?: string }
+
+export async function uploadPageImage(
+  pathname: string,
+  imageKey: string,
+  password: string,
+  formData: FormData
+): Promise<UploadImageResult> {
+  const cookieStore = await cookies()
+  const token = cookieStore.get(EDIT_MODE_COOKIE)?.value
+  if (!token || !(await verifyEditModeToken(token))) {
+    return { error: "Edit session expired. Please re-enter edit mode.", success: false }
+  }
+  if (!process.env.SAVE_PASSWORD || password !== process.env.SAVE_PASSWORD) {
+    return { error: "Incorrect password.", success: false }
+  }
+  if (!/^[a-z][a-z0-9-]*(\.[a-z][a-z0-9-]*)*$/.test(imageKey)) {
+    return { error: "Invalid image key.", success: false }
+  }
+
+  const imageFile = formData.get("image") as File | null
+  if (!imageFile || imageFile.size === 0) {
+    return { error: "No image provided.", success: false }
+  }
+
+  const mimeToExt: Record<string, string> = {
+    "image/jpeg": "jpg",
+    "image/jpg": "jpg",
+    "image/png": "png",
+    "image/webp": "webp",
+    "image/gif": "gif",
+  }
+  const ext = mimeToExt[imageFile.type] ?? "jpg"
+
+  try {
+    const slug = pathnameToSlug(pathname)
+    const existing = await readPageContentDirect(slug)
+
+    // Delete previously uploaded image for this key (only files we wrote under public/images/)
+    const oldSrc = existing[imageKey]
+    if (oldSrc && typeof oldSrc === "string") {
+      const oldPath = oldSrc.split("?")[0]
+      if (oldPath.startsWith("/images/")) {
+        await fs.unlink(path.join(process.cwd(), "public", oldPath)).catch(() => {})
+      }
+    }
+
+    const safeName = imageKey.replace(/[^a-z0-9-]/g, "-")
+    const filename = `${safeName}-${Date.now()}.${ext}`
+    const destDir = path.join(process.cwd(), "public/images", slug)
+    await fs.mkdir(destDir, { recursive: true })
+    await fs.writeFile(destDir + "/" + filename, Buffer.from(await imageFile.arrayBuffer()))
+
+    const src = `/images/${slug}/${filename}`
+    await setPageContent(slug, { ...existing, [imageKey]: src })
+    revalidateTag(PAGE_CONTENT_TAG, "max")
+    revalidatePath(pathname)
+
+    return { error: null, success: true, src }
+  } catch (err) {
+    console.error("[uploadPageImage]", err)
+    return { error: "Server error — image was not saved.", success: false }
+  }
+}
+
 // ── Post delete ───────────────────────────────────────────────────────────────
 
 export async function deletePost(slug: string): Promise<{ error: string | null; success: boolean }> {

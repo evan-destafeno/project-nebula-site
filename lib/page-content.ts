@@ -38,5 +38,10 @@ export async function setPageContent(slug: string, patches: PagePatches): Promis
 // "/" → "home", "/epsilon" → "epsilon", "/crew" → "crew"
 export function pathnameToSlug(pathname: string): string {
   const clean = pathname.replace(/^\/|\/$/g, "")
-  return clean || "home"
+  const slug = clean || "home"
+  // Reject any slug that would escape the content directory
+  if (slug.includes("..") || slug.includes("/") || slug.includes("\\")) {
+    throw new Error("Invalid pathname")
+  }
+  return slug
 }

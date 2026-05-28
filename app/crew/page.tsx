@@ -190,13 +190,13 @@ export default async function CrewPage() {
                   className="kicker load-up"
                   style={ls(300, 500, 8)}
                 >
-                  <WavyText>{"Every one of us runs the full stack: "}</WavyText>
-                  <span className="text-accent-bright"><WavyText>mechanical</WavyText></span>
-                  <WavyText>{", "}</WavyText>
-                  <span className="text-accent-bright"><WavyText>electrical</WavyText></span>
-                  <WavyText>{", and "}</WavyText>
-                  <span className="text-accent-bright"><WavyText>software</WavyText></span>
-                  <WavyText>.</WavyText>
+                  <WavyText patchKey="crew.kicker.intro">{"Every one of us runs the full stack: "}</WavyText>
+                  <span className="text-accent-bright"><WavyText patchKey="crew.kicker.discipline.1">mechanical</WavyText></span>
+                  <WavyText patchKey="crew.kicker.sep.1">{", "}</WavyText>
+                  <span className="text-accent-bright"><WavyText patchKey="crew.kicker.discipline.2">electrical</WavyText></span>
+                  <WavyText patchKey="crew.kicker.sep.2">{", and "}</WavyText>
+                  <span className="text-accent-bright"><WavyText patchKey="crew.kicker.discipline.3">software</WavyText></span>
+                  <WavyText patchKey="crew.kicker.end">.</WavyText>
                 </p>
               </div>
 
@@ -205,7 +205,10 @@ export default async function CrewPage() {
                 className="hidden load-up xl:block"
                 style={ls(240, 600, 12)}
               >
-                <div className="relative aspect-[4/3] overflow-hidden rounded-[3px] border border-rule bg-paper-base">
+                <div
+                  className="relative aspect-[4/3] overflow-hidden rounded-[3px] border border-rule bg-paper-base"
+                  data-image-key="crew.team-photo"
+                >
                   <span
                     aria-hidden="true"
                     className="absolute left-2.5 top-2.5 z-10 font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted"
@@ -213,7 +216,7 @@ export default async function CrewPage() {
                     Team
                   </span>
                   <Image
-                    src="/team-photo.png"
+                    src={patches["crew.team-photo"] ?? "/team-photo.png"}
                     alt="Project Nebula crew"
                     fill
                     className="object-cover object-center"
@@ -237,21 +240,27 @@ export default async function CrewPage() {
             >
               <div className="border-b py-5 sm:border-b-0 sm:border-r sm:pr-8">
                 <p className="text-base font-bold text-ink-strong">
-                  <WavyText>Mechanical Engineering</WavyText>
+                  <WavyText patchKey="crew.disciplines.0.name">Mechanical Engineering</WavyText>
                 </p>
-                <p className="eyebrow mt-2 text-ink-muted">8 / 8 Engineers</p>
+                <p className="eyebrow mt-2 text-ink-muted">
+                  <WavyText patchKey="crew.disciplines.0.count">8 / 8 Engineers</WavyText>
+                </p>
               </div>
               <div className="border-b py-5 sm:border-b-0 sm:border-r sm:px-8">
                 <p className="text-base font-bold text-ink-strong">
-                  <WavyText>Electrical Engineering</WavyText>
+                  <WavyText patchKey="crew.disciplines.1.name">Electrical Engineering</WavyText>
                 </p>
-                <p className="eyebrow mt-2 text-ink-muted">8 / 8 Engineers</p>
+                <p className="eyebrow mt-2 text-ink-muted">
+                  <WavyText patchKey="crew.disciplines.1.count">8 / 8 Engineers</WavyText>
+                </p>
               </div>
               <div className="py-5 sm:pl-8">
                 <p className="text-base font-bold text-ink-strong">
-                  <WavyText>Computer Science</WavyText>
+                  <WavyText patchKey="crew.disciplines.2.name">Computer Science</WavyText>
                 </p>
-                <p className="eyebrow mt-2 text-ink-muted">8 / 8 Engineers</p>
+                <p className="eyebrow mt-2 text-ink-muted">
+                  <WavyText patchKey="crew.disciplines.2.count">8 / 8 Engineers</WavyText>
+                </p>
               </div>
             </div>
             <div
@@ -269,10 +278,12 @@ export default async function CrewPage() {
                   {i > 0 && <div role="separator" className="hairline" />}
                   <article className="grid grid-cols-1 gap-6 py-10 sm:grid-cols-[176px_3fr_2fr] sm:gap-10">
                     <PortraitPlate
-                      src={member.photo}
+                      src={patches[`crew.portrait.${i}`] ?? member.photo}
                       name={member.name}
                       index={pad(i + 1)}
                       caption={member.role}
+                      imageKey={`crew.portrait.${i}`}
+                      captionKey={`crew.members.${i}.role`}
                       className="load-up"
                       style={ls(rowDelay, 500, 10)}
                     />
@@ -327,7 +338,7 @@ export default async function CrewPage() {
                         />
                       ) : (
                         <span className="font-mono text-[0.5625rem] tracking-widest text-ink-faint uppercase">
-                          <WavyText>{sponsor.initials}</WavyText>
+                          <WavyText patchKey={`crew.sponsors.${i}.initials`}>{sponsor.initials}</WavyText>
                         </span>
                       )}
                     </div>
@@ -368,7 +379,7 @@ export default async function CrewPage() {
                     idx === COLOPHON.length - 1 ? "text-ink" : "text-ink-muted"
                   }
                 >
-                  <WavyText>{item}</WavyText>
+                  <WavyText patchKey={`crew.footer.${idx}`}>{item}</WavyText>
                 </span>
               </li>
             ))}
@@ -377,7 +388,7 @@ export default async function CrewPage() {
                 aria-hidden="true"
                 className="inline-block h-1.5 w-1.5 rounded-full bg-mission"
               />
-              <WavyText>Mission Ready</WavyText>
+              <WavyText patchKey="crew.footer.status">Mission Ready</WavyText>
             </li>
           </ul>
         </footer>

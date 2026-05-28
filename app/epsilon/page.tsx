@@ -149,14 +149,16 @@ export default async function EpsilonPage() {
                       { label: "Thrusters", value: "5×" },
                       { label: "Build cost", value: "~$850" },
                     ] as const
-                  ).map(({ label, value }) => (
+                  ).map(({ label, value }, i) => (
                     <div key={label}>
-                      <dt className="eyebrow text-ink-faint">{label}</dt>
+                      <dt className="eyebrow text-ink-faint">
+                        <WavyText patchKey={`epsilon.spec.${i}.label`}>{label}</WavyText>
+                      </dt>
                       <dd
                         className="mt-1 font-mono text-[0.8125rem] uppercase tracking-[0.10em] text-ink-muted"
                         data-tabular
                       >
-                        {value}
+                        <WavyText patchKey={`epsilon.spec.${i}.value`}>{value}</WavyText>
                       </dd>
                     </div>
                   ))}
@@ -176,7 +178,11 @@ export default async function EpsilonPage() {
               className="flex items-center justify-center border-t border-rule px-8 py-10 lg:border-t-0 lg:px-14 lg:py-16 lg:h-full load-up"
               style={ls(460, 700, 16)}
             >
-              <SubAlphaPlate className="w-full max-w-[420px]" />
+              <SubAlphaPlate
+                className="w-full max-w-[420px]"
+                imageKey="epsilon.sub-photo"
+                imageSrc={patches["epsilon.sub-photo"]}
+              />
             </div>
           </section>
 
@@ -191,17 +197,17 @@ export default async function EpsilonPage() {
               >
                 <div>
                   <p className="eyebrow text-ink-faint mb-6">
-                    <WavyText>Weight</WavyText>
+                    <WavyText patchKey="epsilon.weight.label">Weight</WavyText>
                   </p>
                   <div className="flex items-end gap-3 mb-8" data-tabular>
                     <span
                       className="font-mono font-bold leading-none tracking-[-0.03em] text-ink-strong"
                       style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
                     >
-                      2.1
+                      <WavyText patchKey="epsilon.weight.number">2.1</WavyText>
                     </span>
                     <span className="mb-1 text-[1.125rem] font-mono text-ink-muted uppercase tracking-[0.08em]">
-                      kg
+                      <WavyText patchKey="epsilon.weight.unit">kg</WavyText>
                     </span>
                   </div>
                 </div>
@@ -217,7 +223,7 @@ export default async function EpsilonPage() {
                     </div>
                   </div>
                   <p className="text-[1.0625rem] leading-relaxed text-ink-muted max-w-[38ch]">
-                    <WavyText>
+                    <WavyText patchKey="epsilon.weight.description">
                       Lightest entry in the 2026 RoboSub bracket by a wide
                       margin. Most university vehicles weigh four to eight times
                       as much.
@@ -233,14 +239,14 @@ export default async function EpsilonPage() {
               >
                 <div>
                   <p className="eyebrow text-ink-faint mb-6">
-                    <WavyText>Build Cost</WavyText>
+                    <WavyText patchKey="epsilon.cost.label">Build Cost</WavyText>
                   </p>
                   <div className="flex items-end gap-1 mb-8" data-tabular>
                     <span
                       className="font-mono font-bold leading-none tracking-[-0.03em] text-ink-strong"
                       style={{ fontSize: "clamp(2rem, 3.5vw, 3rem)" }}
                     >
-                      $850
+                      <WavyText patchKey="epsilon.cost.number">$850</WavyText>
                     </span>
                   </div>
                 </div>
@@ -256,7 +262,7 @@ export default async function EpsilonPage() {
                     </div>
                   </div>
                   <p className="text-[1.0625rem] leading-relaxed text-ink-muted max-w-[38ch]">
-                    <WavyText>
+                    <WavyText patchKey="epsilon.cost.description">
                       Less than a single component on many university builds.
                       Every off-the-shelf carrier board was replaced with a
                       custom PCB wherever the geometry allowed.
@@ -275,7 +281,7 @@ export default async function EpsilonPage() {
                 className="eyebrow text-ink-faint mb-8 load-up"
                 style={ls(0, 400)}
               >
-                <WavyText>Design Process</WavyText>
+                <WavyText patchKey="epsilon.process.label">Design Process</WavyText>
               </p>
               <div className="grid grid-cols-1 divide-y divide-rule lg:grid-cols-5 lg:divide-y-0 lg:divide-x">
                 {STAGES.map((stage, i) => (
@@ -288,10 +294,10 @@ export default async function EpsilonPage() {
                       {String(i + 1).padStart(2, "0")}
                     </p>
                     <h3 className="mb-2 text-[0.9375rem] font-bold text-ink-strong">
-                      <WavyText>{stage.label}</WavyText>
+                      <WavyText patchKey={`epsilon.process.${i}.label`}>{stage.label}</WavyText>
                     </h3>
                     <p className="text-[0.875rem] leading-relaxed text-ink-muted">
-                      <WavyText>{stage.desc}</WavyText>
+                      <WavyText patchKey={`epsilon.process.${i}.desc`}>{stage.desc}</WavyText>
                     </p>
                   </div>
                 ))}
@@ -309,13 +315,13 @@ export default async function EpsilonPage() {
                 style={ls(0, 500, 8)}
               >
                 <p className="eyebrow text-ink-faint mb-4">
-                  <WavyText>Sealed Capsule</WavyText>
+                  <WavyText patchKey="epsilon.capsule.label">Sealed Capsule</WavyText>
                 </p>
                 <h2 className="mb-4 text-[1.875rem] font-bold leading-tight tracking-[-0.03em] text-ink-strong">
-                  <WavyText>Custom PCB frames, no carrier boards.</WavyText>
+                  <WavyText patchKey="epsilon.capsule.headline">Custom PCB frames, no carrier boards.</WavyText>
                 </h2>
                 <p className="mb-8 max-w-[42ch] text-[1.0625rem] leading-relaxed text-ink-muted">
-                  <WavyText>
+                  <WavyText patchKey="epsilon.capsule.description">
                     Electronics live in a sealed acrylic tube with aluminum end
                     caps and dual O-ring seals at each end. All PCBs were
                     designed to fit the capsule geometry, eliminating the wasted
@@ -331,12 +337,14 @@ export default async function EpsilonPage() {
                       { label: "PCBs", value: "Custom frames, in-house" },
                       { label: "Depth rating", value: "8 m tested" },
                     ] as const
-                  ).map(({ label, value }) => (
+                  ).map(({ label, value }, i) => (
                     <div key={label} className="flex items-baseline gap-4">
                       <dt className="eyebrow min-w-[9rem] text-ink-faint">
-                        {label}
+                        <WavyText patchKey={`epsilon.capsule.spec.${i}.label`}>{label}</WavyText>
                       </dt>
-                      <dd className="text-[0.875rem] text-ink-muted">{value}</dd>
+                      <dd className="text-[0.875rem] text-ink-muted">
+                        <WavyText patchKey={`epsilon.capsule.spec.${i}.value`}>{value}</WavyText>
+                      </dd>
                     </div>
                   ))}
                 </dl>
@@ -498,10 +506,10 @@ export default async function EpsilonPage() {
                   </div>
                   <figcaption className="font-italic-text mt-3 text-[0.875rem] leading-snug text-ink-muted">
                     <span className="text-ink">
-                      <WavyText>Sub-Epsilon</WavyText>
+                      <WavyText patchKey="epsilon.capsule.figcaption.title">Sub-Epsilon</WavyText>
                     </span>
                     <span className="mx-1.5 text-ink-faint">·</span>
-                    <WavyText>
+                    <WavyText patchKey="epsilon.capsule.figcaption.desc">
                       electronics capsule, longitudinal cross-section, working
                       drawing.
                     </WavyText>
@@ -521,13 +529,13 @@ export default async function EpsilonPage() {
                 style={ls(0, 500, 8)}
               >
                 <p className="eyebrow text-ink-faint mb-4">
-                  <WavyText>Compute Platform</WavyText>
+                  <WavyText patchKey="epsilon.compute.label">Compute Platform</WavyText>
                 </p>
                 <h2 className="mb-4 text-[1.875rem] font-bold leading-tight tracking-[-0.03em] text-ink-strong">
-                  <WavyText>Two Raspberry Pi 5s, each with a defined job.</WavyText>
+                  <WavyText patchKey="epsilon.compute.headline">Two Raspberry Pi 5s, each with a defined job.</WavyText>
                 </h2>
                 <p className="mb-5 max-w-[44ch] text-[1.0625rem] leading-relaxed text-ink-muted">
-                  <WavyText>
+                  <WavyText patchKey="epsilon.compute.body.1">
                     One Pi 5 handles the computer vision pipeline exclusively,
                     running YOLOv11 inference against the camera feed for object
                     detection and gate identification. The second handles
@@ -535,7 +543,7 @@ export default async function EpsilonPage() {
                   </WavyText>
                 </p>
                 <p className="max-w-[44ch] text-[1.0625rem] leading-relaxed text-ink-muted">
-                  <WavyText>
+                  <WavyText patchKey="epsilon.compute.body.2">
                     Splitting the workload keeps both boards within thermal
                     limits inside the sealed capsule and keeps the vision
                     pipeline from competing with navigation for CPU time. Both
@@ -554,10 +562,10 @@ export default async function EpsilonPage() {
                 style={ls(120, 500, 8)}
               >
                 <p className="eyebrow text-ink-faint mb-4">
-                  <WavyText>Field Notes</WavyText>
+                  <WavyText patchKey="epsilon.fieldnotes.label">Field Notes</WavyText>
                 </p>
                 <h2 className="mb-6 text-[1.875rem] font-bold leading-tight tracking-[-0.03em] text-ink-strong">
-                  <WavyText>We burned through several Pi 5s.</WavyText>
+                  <WavyText patchKey="epsilon.fieldnotes.headline">We burned through several Pi 5s.</WavyText>
                 </h2>
                 <div className="space-y-7">
                   {(
@@ -578,15 +586,15 @@ export default async function EpsilonPage() {
                         body: "Every board swap is now a full waterproofing recertification. The capsule pressure-tests before any pool session following an internal change. Three stable sessions since.",
                       },
                     ] as const
-                  ).map(({ n, title, body }) => (
+                  ).map(({ n, title, body }, i) => (
                     <div key={n} className="grid grid-cols-[2rem_1fr] gap-3">
                       <span className="eyebrow text-ink-faint pt-[3px]">{n}</span>
                       <div>
                         <p className="mb-1.5 text-[0.9375rem] font-bold text-ink-strong">
-                          <WavyText>{title}</WavyText>
+                          <WavyText patchKey={`epsilon.fieldnotes.${i}.title`}>{title}</WavyText>
                         </p>
                         <p className="text-[0.9375rem] leading-relaxed text-ink-muted">
-                          <WavyText>{body}</WavyText>
+                          <WavyText patchKey={`epsilon.fieldnotes.${i}.body`}>{body}</WavyText>
                         </p>
                       </div>
                     </div>
@@ -606,13 +614,13 @@ export default async function EpsilonPage() {
                 style={ls(0, 500, 8)}
               >
                 <p className="eyebrow text-ink-faint mb-4">
-                  <WavyText>ROS 2 Implementation</WavyText>
+                  <WavyText patchKey="epsilon.ros.label">ROS 2 Implementation</WavyText>
                 </p>
                 <h2 className="mb-6 text-[1.875rem] font-bold leading-tight tracking-[-0.03em] text-ink-strong">
-                  <WavyText>Jazzy on bare metal, no simulation crutch.</WavyText>
+                  <WavyText patchKey="epsilon.ros.headline">Jazzy on bare metal, no simulation crutch.</WavyText>
                 </h2>
                 <p className="mb-8 max-w-[44ch] text-[1.0625rem] leading-relaxed text-ink-muted">
-                  <WavyText>
+                  <WavyText patchKey="epsilon.ros.description">
                     The stack runs ROS 2 Jazzy directly on Raspberry Pi OS Lite,
                     no Docker, no simulation overlay. Every node was written from
                     scratch and validated against real hardware.
@@ -673,13 +681,13 @@ export default async function EpsilonPage() {
                 style={ls(120, 500, 8)}
               >
                 <p className="eyebrow text-ink-faint mb-4">
-                  <WavyText>Autonomous Navigation</WavyText>
+                  <WavyText patchKey="epsilon.nav.label">Autonomous Navigation</WavyText>
                 </p>
                 <h2 className="mb-6 text-[1.875rem] font-bold leading-tight tracking-[-0.03em] text-ink-strong">
-                  <WavyText>State machine execution, sensor fusion.</WavyText>
+                  <WavyText patchKey="epsilon.nav.headline">State machine execution, sensor fusion.</WavyText>
                 </h2>
                 <p className="mb-5 max-w-[44ch] text-[1.0625rem] leading-relaxed text-ink-muted">
-                  <WavyText>
+                  <WavyText patchKey="epsilon.nav.body.1">
                     Sub-Epsilon navigates using a hierarchical state machine that
                     sequences mission tasks against the RoboSub task list. Each
                     task is a defined state with entry conditions, execution
@@ -687,7 +695,7 @@ export default async function EpsilonPage() {
                   </WavyText>
                 </p>
                 <p className="mb-10 max-w-[44ch] text-[1.0625rem] leading-relaxed text-ink-muted">
-                  <WavyText>
+                  <WavyText patchKey="epsilon.nav.body.2">
                     Depth hold and heading hold run as continuous background PID
                     loops. Detection results from the vision node are consumed
                     as task preconditions: the sub will not transition states on
@@ -704,12 +712,14 @@ export default async function EpsilonPage() {
                       { label: "Mission", value: "Hierarchical state machine" },
                       { label: "Localisation", value: "Dead reckoning + vision" },
                     ] as const
-                  ).map(({ label, value }) => (
+                  ).map(({ label, value }, i) => (
                     <div key={label} className="flex items-baseline gap-4">
                       <dt className="eyebrow min-w-[9rem] text-ink-faint">
-                        {label}
+                        <WavyText patchKey={`epsilon.nav.spec.${i}.label`}>{label}</WavyText>
                       </dt>
-                      <dd className="text-[0.875rem] text-ink-muted">{value}</dd>
+                      <dd className="text-[0.875rem] text-ink-muted">
+                        <WavyText patchKey={`epsilon.nav.spec.${i}.value`}>{value}</WavyText>
+                      </dd>
                     </div>
                   ))}
                 </dl>
@@ -744,7 +754,7 @@ export default async function EpsilonPage() {
                     idx === COLOPHON.length - 1 ? "text-ink" : "text-ink-muted"
                   }
                 >
-                  <WavyText>{item}</WavyText>
+                  <WavyText patchKey={`epsilon.footer.${idx}`}>{item}</WavyText>
                 </span>
               </li>
             ))}
@@ -753,7 +763,7 @@ export default async function EpsilonPage() {
                 aria-hidden="true"
                 className="inline-block h-1.5 w-1.5 rounded-full bg-mission"
               />
-              <WavyText>Mission Ready</WavyText>
+              <WavyText patchKey="epsilon.footer.status">Mission Ready</WavyText>
             </li>
           </ul>
         </footer>

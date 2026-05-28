@@ -1,7 +1,8 @@
 "use client"
 
 import { useEffect, useRef, useState, useTransition } from "react"
-import { savePageContent, exitEditMode } from "@/app/admin/actions"
+import { useRouter } from "next/navigation"
+import { savePageContent, exitEditMode, uploadPageImage } from "@/app/admin/actions"
 
 // Collects all elements with a data-patch-key attribute. These are the sr-only
 // spans emitted by WavyText when a patchKey prop is provided. Keyed by the
@@ -131,18 +132,27 @@ const btnGhost = (disabled: boolean): React.CSSProperties => ({
   opacity: disabled ? 0.4 : 1,
 })
 
-type BarState = "idle" | "confirm" | "saving" | "saved" | "error"
+type BarState = "idle" | "confirm" | "saving" | "saved" | "error" | "image-confirm" | "image-saving"
+
+type PendingImage = { key: string; file: File; previewUrl: string }
 
 export function EditModeClient({ targetPath }: { targetPath: string }) {
+  const router = useRouter()
   const [barState, setBarState] = useState<BarState>("idle")
   const [barError, setBarError] = useState<string | null>(null)
   const [password, setPassword] = useState("")
   const [isPending, startTransition] = useTransition()
+  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null)
   const changesRef = useRef<Record<string, string>>({})
   const elementsRef = useRef<Map<string, HTMLElement>>(new Map())
   const passwordInputRef = useRef<HTMLInputElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const pendingImageKeyRef = useRef<string | null>(null)
+  const barStateRef = useRef<BarState>("idle")
 
-  const disabled = isPending || barState === "saving"
+  const disabled = isPending || barState === "saving" || barState === "image-saving"
+
+  useEffect(() => { barStateRef.current = barState }, [barState])
 
   useEffect(() => {
     const body = document.body
@@ -166,6 +176,28 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
         clip-path: none !important;
         white-space: normal !important;
         border: 0 !important;
+      }
+      [data-edit-mode] [data-image-key] { cursor: pointer !important; position: relative; }
+      [data-edit-mode] [data-image-key]::after {
+        content: 'Replace';
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: oklch(0.15 0.08 280 / 0);
+        color: transparent;
+        font-family: var(--font-geist-sans, system-ui);
+        font-size: 0.6875rem;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        pointer-events: none;
+        z-index: 10;
+        transition: background 0.15s, color 0.15s;
+      }
+      [data-edit-mode] [data-image-key]:hover::after {
+        background: oklch(0.15 0.08 280 / 0.72);
+        color: oklch(0.97 0 0);
       }
     `
     document.head.appendChild(styleEl)
@@ -195,6 +227,20 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
     }
     window.addEventListener("beforeunload", beforeUnload)
 
+    const handleImageClick = (e: MouseEvent) => {
+      if (barStateRef.current !== "idle") return
+      const target = e.target as Element | null
+      if (!target) return
+      if (target.closest("[data-edit-ui]")) return
+      const container = target.closest("[data-image-key]")
+      if (!container) return
+      const key = container.getAttribute("data-image-key")
+      if (!key) return
+      pendingImageKeyRef.current = key
+      fileInputRef.current?.click()
+    }
+    document.addEventListener("click", handleImageClick)
+
     return () => {
       clearTimeout(timer)
       body.removeAttribute("data-edit-mode")
@@ -202,11 +248,12 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
       deactivateEditMode(elementsRef.current)
       window.removeEventListener("beforeunload", beforeUnload)
       document.removeEventListener("click", suppressClicks, true)
+      document.removeEventListener("click", handleImageClick)
     }
   }, [])
 
   useEffect(() => {
-    if (barState === "confirm") {
+    if (barState === "confirm" || barState === "image-confirm") {
       setTimeout(() => passwordInputRef.current?.focus(), 50)
     }
   }, [barState])
@@ -251,9 +298,60 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
     })
   }
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    const key = pendingImageKeyRef.current
+    if (!file || !key) return
+    const previewUrl = URL.createObjectURL(file)
+    setPendingImage({ key, file, previewUrl })
+    setBarState("image-confirm")
+    setPassword("")
+    setBarError(null)
+    e.target.value = ""
+  }
+
+  const handleImageUpload = () => {
+    if (!pendingImage || !password) return
+    setBarState("image-saving")
+    startTransition(async () => {
+      const fd = new FormData()
+      fd.append("image", pendingImage.file)
+      const result = await uploadPageImage(targetPath, pendingImage.key, password, fd)
+      if (result.error) {
+        setBarError(result.error)
+        setBarState("error")
+      } else {
+        URL.revokeObjectURL(pendingImage.previewUrl)
+        setPendingImage(null)
+        pendingImageKeyRef.current = null
+        setBarState("saved")
+        setTimeout(() => setBarState("idle"), 2500)
+        router.refresh()
+      }
+    })
+  }
+
+  const cancelImageUpload = () => {
+    if (pendingImage) URL.revokeObjectURL(pendingImage.previewUrl)
+    setPendingImage(null)
+    pendingImageKeyRef.current = null
+    setBarState("idle")
+    setPassword("")
+    setBarError(null)
+  }
+
   const pageLabel = targetPath === "/" ? "Home" : targetPath.replace(/^\//, "")
 
   return (
+    <>
+    <input
+      ref={fileInputRef}
+      type="file"
+      accept="image/jpeg,image/png,image/webp,image/gif"
+      onChange={handleFileChange}
+      style={{ display: "none" }}
+      aria-hidden="true"
+    />
     <div
       data-edit-ui="true"
       style={{
@@ -365,14 +463,24 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
           ) : (
             <>
               <button
-                onClick={() => { setBarState("confirm"); setBarError(null) }}
+                onClick={() => {
+                  if (pendingImage) {
+                    setBarState("image-confirm")
+                  } else {
+                    setBarState("confirm")
+                  }
+                  setBarError(null)
+                }}
                 disabled={disabled}
                 style={btnSecondary(disabled)}
               >
                 Try again
               </button>
               <button
-                onClick={() => setBarState("idle")}
+                onClick={() => {
+                  if (pendingImage) cancelImageUpload()
+                  else setBarState("idle")
+                }}
                 disabled={disabled}
                 style={btnGhost(disabled)}
               >
@@ -382,6 +490,60 @@ export function EditModeClient({ targetPath }: { targetPath: string }) {
           )}
         </>
       )}
+
+      {barState === "image-confirm" && pendingImage && (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={pendingImage.previewUrl}
+            alt=""
+            style={{ height: 30, width: "auto", borderRadius: 2, border: "1px solid var(--rule, rgba(255,255,255,0.1))" }}
+          />
+          <span style={{ color: "var(--ink-faint, #666)", maxWidth: 140, overflow: "hidden", textOverflow: "ellipsis" }}>
+            {pendingImage.file.name}
+          </span>
+          <span style={{ color: "var(--ink-faint, #666)" }}>Password</span>
+          <input
+            ref={passwordInputRef}
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => { if (e.key === "Enter" && password && !disabled) handleImageUpload() }}
+            placeholder="enter password"
+            disabled={disabled}
+            style={{
+              background: "var(--paper-base, #111)",
+              color: "var(--ink, #eee)",
+              border: "1px solid var(--rule, rgba(255,255,255,0.15))",
+              borderRadius: 4,
+              padding: "4px 10px",
+              fontSize: "0.8125rem",
+              fontFamily: "var(--font-geist-mono, monospace)",
+              letterSpacing: "0.02em",
+              textTransform: "none",
+              outline: "none",
+              width: 150,
+              cursor: disabled ? "not-allowed" : "text",
+              opacity: disabled ? 0.4 : 1,
+            }}
+          />
+          <button
+            onClick={handleImageUpload}
+            disabled={disabled || !password}
+            style={btnPrimary(disabled || !password)}
+          >
+            Upload
+          </button>
+          <button onClick={cancelImageUpload} disabled={disabled} style={btnSecondary(disabled)}>
+            Cancel
+          </button>
+        </>
+      )}
+
+      {barState === "image-saving" && (
+        <span style={{ color: "var(--ink-faint, #666)" }}>Uploading…</span>
+      )}
     </div>
+    </>
   )
 }

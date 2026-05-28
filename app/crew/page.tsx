@@ -300,7 +300,7 @@ export default async function CrewPage() {
                     </div>
                     {member.outside && (
                       <div className="flex flex-col gap-2 border-t border-[var(--rule)] pt-5 sm:border-t-0 sm:border-l sm:border-[var(--rule)] sm:pt-0 sm:pl-8 load-up" style={ls(rowDelay + 80, 500, 8)}>
-                        <p className="eyebrow text-ink-faint">Beyond the sub</p>
+                        <p className="eyebrow text-ink-faint"><WavyText patchKey={`crew.members.${i}.outside-label`}>Beyond the sub</WavyText></p>
                         <p className="text-[0.9375rem] leading-relaxed text-ink-muted">
                           <WavyText patchKey={`crew.members.${i}.outside`}>{member.outside}</WavyText>
                         </p>
@@ -316,7 +316,7 @@ export default async function CrewPage() {
 
             {/* Sponsors */}
             <section id="sponsors" className="pt-14 pb-2">
-              <p className="eyebrow text-ink-faint mb-8">With support from</p>
+              <p className="eyebrow text-ink-faint mb-8"><WavyText patchKey="crew.sponsors.label">With support from</WavyText></p>
               <div className="grid grid-cols-1 sm:grid-cols-3">
                 {SPONSORS.map((sponsor, i) => (
                   <div

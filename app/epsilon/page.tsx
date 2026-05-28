@@ -365,12 +365,12 @@ export default async function EpsilonPage() {
                     aria-label="Longitudinal cross-section of the Sub-Epsilon electronics capsule, showing acrylic tube, aluminum end caps, O-ring seals, and custom PCB stack"
                   >
                     <div className="absolute top-3 left-3 colophon">
-                      <span className="text-ink-muted">Capsule</span>
+                      <span className="text-ink-muted"><WavyText patchKey="epsilon.capsule.diagram.label">Capsule</WavyText></span>
                       <span className="mx-1.5 text-ink-faint">/</span>
-                      <span className="text-ink-faint">cross-section</span>
+                      <span className="text-ink-faint"><WavyText patchKey="epsilon.capsule.diagram.sublabel">cross-section</WavyText></span>
                     </div>
                     <div className="absolute top-3 right-3 colophon text-ink-faint">
-                      sealed · 8 m
+                      <WavyText patchKey="epsilon.capsule.diagram.meta">sealed · 8 m</WavyText>
                     </div>
 
                     <svg
@@ -634,40 +634,40 @@ export default async function EpsilonPage() {
                   aria-label="ROS 2 node graph showing vision, IMU, depth, navigation, and thruster nodes"
                 >
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-strong">
-                    /nebula
+                    <WavyText patchKey="epsilon.ros.tree.0">/nebula</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-4">
-                    ├─ /vision_node
+                    <WavyText patchKey="epsilon.ros.tree.1">{"├─ /vision_node"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-12">
-                    └─ YOLOv11 · gate / target detection
+                    <WavyText patchKey="epsilon.ros.tree.2">{"└─ YOLOv11 · gate / target detection"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-4">
-                    ├─ /imu_node
+                    <WavyText patchKey="epsilon.ros.tree.3">{"├─ /imu_node"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-12">
-                    └─ orientation · roll / pitch / yaw
+                    <WavyText patchKey="epsilon.ros.tree.4">{"└─ orientation · roll / pitch / yaw"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-4">
-                    ├─ /depth_node
+                    <WavyText patchKey="epsilon.ros.tree.5">{"├─ /depth_node"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-12">
-                    └─ pressure sensor · depth hold
+                    <WavyText patchKey="epsilon.ros.tree.6">{"└─ pressure sensor · depth hold"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-4">
-                    ├─ /nav_node
+                    <WavyText patchKey="epsilon.ros.tree.7">{"├─ /nav_node"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-12">
-                    ├─ PID controllers · 3-axis
+                    <WavyText patchKey="epsilon.ros.tree.8">{"├─ PID controllers · 3-axis"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-12">
-                    └─ mission state machine
+                    <WavyText patchKey="epsilon.ros.tree.9">{"└─ mission state machine"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-4">
-                    └─ /thruster_node
+                    <WavyText patchKey="epsilon.ros.tree.10">{"└─ /thruster_node"}</WavyText>
                   </p>
                   <p className="font-mono text-[0.75rem] leading-[2] text-ink-faint pl-12">
-                    └─ 5× ESC · PWM command
+                    <WavyText patchKey="epsilon.ros.tree.11">{"└─ 5× ESC · PWM command"}</WavyText>
                   </p>
                 </div>
               </div>

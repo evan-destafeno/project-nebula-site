@@ -107,7 +107,7 @@ export function Hero() {
                   />
                 </Link>
                 <Link
-                  href="#log"
+                  href="/log"
                   className="group/sec inline-flex items-center gap-2 text-[0.875rem] text-ink transition-colors duration-200 hover:text-accent-bright"
                 >
                   <WavyText>Latest update</WavyText>

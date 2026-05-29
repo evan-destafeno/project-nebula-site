@@ -5,15 +5,12 @@ import { logoutTo } from "@/app/admin/actions"
 import { PostForm } from "@/components/admin/post-form"
 import { EditSection } from "@/components/admin/edit-form"
 import { EditSiteSection } from "@/components/admin/edit-site-section"
-import { PicturesSection } from "@/components/admin/pictures-section"
-
-type Section = "new" | "edit" | "site" | "pictures"
+type Section = "new" | "edit" | "site"
 
 const TABS: { key: Section; label: string }[] = [
   { key: "new", label: "New post" },
   { key: "edit", label: "Edit posts" },
   { key: "site", label: "Edit site" },
-  { key: "pictures", label: "Pictures" },
 ]
 
 export function AdminShell() {
@@ -78,7 +75,7 @@ export function AdminShell() {
       {section === "site" && (
         <EditSiteSection fromPath={fromPath} disabled={isPending} />
       )}
-      {section === "pictures" && <PicturesSection />}
+
     </div>
   )
 }

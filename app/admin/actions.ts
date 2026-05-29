@@ -435,7 +435,7 @@ export async function uploadPageImage(
   if (!process.env.SAVE_PASSWORD || password !== process.env.SAVE_PASSWORD) {
     return { error: "Incorrect password.", success: false }
   }
-  if (!/^[a-z][a-z0-9-]*(\.[a-z][a-z0-9-]*)*$/.test(imageKey)) {
+  if (!/^[a-z][a-z0-9-]*(\.[a-z0-9][a-z0-9-]*)*$/.test(imageKey)) {
     return { error: "Invalid image key.", success: false }
   }
 

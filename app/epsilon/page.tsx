@@ -1,8 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Wordmark } from "@/components/wordmark";
 import { WavyText } from "@/components/wavy-text";
+import { SiteHeader } from "@/components/site-header";
 import { SubAlphaPlate } from "@/components/sub-epsilon-plate";
 import { PatchesProvider } from "@/components/patches-provider";
 import { getPageContent } from "@/lib/page-content";
@@ -12,13 +11,6 @@ export const metadata: Metadata = {
   description:
     "Full technical specification for Sub-Epsilon — weight, cost, autonomy stack, and electronics. The lightest, cheapest entry in the RoboSub 2026 bracket.",
 };
-
-const NAV_LINKS = [
-  { href: "/epsilon", label: "The Sub" },
-  { href: "/crew", label: "Crew" },
-  { href: "/log", label: "Log" },
-  { href: "/crew#sponsors", label: "Sponsors" },
-] as const;
 
 const COLOPHON = [
   "Sub-Epsilon",
@@ -61,44 +53,9 @@ export default async function EpsilonPage() {
   const patches = await getPageContent("epsilon");
   return (
     <PatchesProvider patches={patches}>
-    <>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
-
       <div className="flex min-h-dvh flex-col">
-        {/* ── Header ────────────────────────────────────────────────────── */}
-        <header
-          role="banner"
-          className="flex items-center justify-between gap-6 px-6 pt-6 sm:px-10 load-up"
-          style={ls(0, 400, 6)}
-        >
-          <Wordmark />
-          <nav aria-label="primary" className="hidden md:block">
-            <ul className="flex items-center gap-8">
-              {NAV_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="group/nav relative text-[0.8125rem] text-ink-muted transition-colors duration-200 hover:text-ink-strong"
-                  >
-                    <WavyText>{link.label}</WavyText>
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px origin-left scale-x-0 bg-accent-base transition-transform duration-300 [transition-timing-function:var(--ease-quart)] group-hover/nav:scale-x-100"
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
-
-        <div
-          role="separator"
-          className="hairline mt-6 load-rule"
-          style={{ "--load-delay": "80ms" } as CSSProperties}
-        />
+        <a href="#main" className="skip-link">Skip to content</a>
+        <SiteHeader />
 
         {/* ── Main ──────────────────────────────────────────────────────── */}
         <main id="main" className="flex flex-1 flex-col">
@@ -768,7 +725,6 @@ export default async function EpsilonPage() {
           </ul>
         </footer>
       </div>
-    </>
     </PatchesProvider>
   );
 }

@@ -1,8 +1,7 @@
 import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Wordmark } from "@/components/wordmark";
 import { WavyText } from "@/components/wavy-text";
+import { SiteHeader } from "@/components/site-header";
 import Image from "next/image";
 import { PortraitPlate } from "@/components/portrait-plate";
 import { VideoPlayer } from "@/components/video-player";
@@ -14,13 +13,6 @@ export const metadata: Metadata = {
   description:
     "Eight engineers. Mechanical, electrical, and software — every one of us.",
 };
-
-const NAV_LINKS = [
-  { href: "/epsilon", label: "The Sub" },
-  { href: "/crew", label: "Crew" },
-  { href: "/log", label: "Log" },
-  { href: "#sponsors", label: "Sponsors" },
-] as const;
 
 interface Sponsor {
   initials: string;
@@ -126,44 +118,9 @@ export default async function CrewPage() {
   const patches = await getPageContent("crew");
   return (
     <PatchesProvider patches={patches}>
-    <>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
-
       <div className="flex min-h-dvh flex-col">
-        {/* ── Top band ─────────────────────────────────────────────────── */}
-        <header
-          role="banner"
-          className="flex items-center justify-between gap-6 px-6 pt-6 sm:px-10 load-up"
-          style={ls(0, 400, 6)}
-        >
-          <Wordmark />
-          <nav aria-label="primary" className="hidden md:block">
-            <ul className="flex items-center gap-8">
-              {NAV_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="group/nav relative text-[0.8125rem] text-ink-muted transition-colors duration-200 hover:text-ink-strong"
-                  >
-                    <WavyText>{link.label}</WavyText>
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px origin-left scale-x-0 bg-accent-base transition-transform duration-300 [transition-timing-function:var(--ease-quart)] group-hover/nav:scale-x-100"
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
-
-        <div
-          role="separator"
-          className="hairline mt-6 load-rule"
-          style={{ "--load-delay": "80ms" } as CSSProperties}
-        />
+        <a href="#main" className="skip-link">Skip to content</a>
+        <SiteHeader />
 
         {/* ── Main ─────────────────────────────────────────────────────── */}
         <main
@@ -412,7 +369,6 @@ export default async function CrewPage() {
           </ul>
         </footer>
       </div>
-    </>
     </PatchesProvider>
   );
 }

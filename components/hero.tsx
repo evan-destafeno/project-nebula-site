@@ -1,16 +1,9 @@
 import type { CSSProperties } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { Wordmark } from "@/components/wordmark";
 import { SubAlphaPlate } from "@/components/sub-epsilon-plate";
 import { WavyText } from "@/components/wavy-text";
-
-const NAV_LINKS = [
-  { href: "/epsilon", label: "The Sub" },
-  { href: "/crew", label: "Crew" },
-  { href: "/log", label: "Log" },
-  { href: "/crew#sponsors", label: "Sponsors" },
-] as const;
+import { SiteHeader } from "@/components/site-header";
 
 const COLOPHON = [
   "Sub-Epsilon",
@@ -28,40 +21,9 @@ const ls = (delay: number, dur: number, y?: number): CSSProperties =>
 
 export function Hero() {
   return (
-    <>
-      <a href="#main" className="skip-link">
-        Skip to content
-      </a>
-
-      <div className="flex min-h-dvh flex-col">
-        {/* ── Top band ─────────────────────────────────────────────────── */}
-        <header
-          role="banner"
-          className="flex items-center justify-between gap-6 px-6 pt-6 sm:px-10 load-up"
-          style={ls(0, 400, 6)}
-        >
-          <Wordmark />
-          <nav aria-label="primary" className="hidden md:block">
-            <ul className="flex items-center gap-8">
-              {NAV_LINKS.map((link) => (
-                <li key={link.href}>
-                  <Link
-                    href={link.href}
-                    className="group/nav relative text-[0.8125rem] text-ink-muted transition-colors duration-200 hover:text-ink-strong"
-                  >
-                    <WavyText>{link.label}</WavyText>
-                    <span
-                      aria-hidden="true"
-                      className="pointer-events-none absolute -bottom-1 left-0 right-0 h-px scale-x-0 origin-left bg-accent-base transition-transform duration-300 [transition-timing-function:var(--ease-quart)] group-hover/nav:scale-x-100"
-                    />
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </nav>
-        </header>
-
-        <div role="separator" className="hairline mt-6 load-rule" style={{ "--load-delay": "80ms" } as CSSProperties} />
+    <div className="flex min-h-dvh flex-col">
+      <a href="#main" className="skip-link">Skip to content</a>
+      <SiteHeader />
 
         {/* ── Center field ─────────────────────────────────────────────── */}
         <main
@@ -169,7 +131,6 @@ export function Hero() {
             </li>
           </ul>
         </footer>
-      </div>
-    </>
+    </div>
   );
 }

@@ -5,6 +5,7 @@ import { Wordmark } from "@/components/wordmark";
 import { WavyText } from "@/components/wavy-text";
 import Image from "next/image";
 import { PortraitPlate } from "@/components/portrait-plate";
+import { VideoPlayer } from "@/components/video-player";
 import { PatchesProvider } from "@/components/patches-provider";
 import { getPageContent } from "@/lib/page-content";
 
@@ -268,6 +269,24 @@ export default async function CrewPage() {
               className="hairline load-rule"
               style={{ "--load-delay": "480ms" } as CSSProperties}
             />
+
+            {/* Team video */}
+            <figure className="pt-10 pb-10 load-up mx-auto max-w-xl" style={ls(495, 500, 10)}>
+              <div className="relative aspect-video overflow-hidden rounded-[3px] border border-rule">
+                <span
+                  aria-hidden="true"
+                  className="absolute left-2.5 top-2.5 z-10 font-mono text-[0.625rem] uppercase tracking-[0.16em] text-ink-muted pointer-events-none"
+                >
+                  Team
+                </span>
+                <VideoPlayer
+                  videoId="j82se-9Kdkc"
+                  title="Project Nebula team"
+                  poster="/video-cover.png"
+                />
+              </div>
+            </figure>
+            <div role="separator" className="hairline" />
 
             {/* Roster */}
             <ol role="list">
